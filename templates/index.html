@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeEX - Online Code Compiler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #475569;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            font-size: 1.75rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 1px;
+        }
+
+        .editor-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        .output-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        /* Editor Controls */
+        .controls {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--primary);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-execute {
+            background: var(--success);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .btn-execute:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-execute:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Editor Area */
+        .editor-wrapper {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #editor {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: none;
+            overflow: auto;
+        }
+
+        #editor:focus {
+            outline: none;
+        }
+
+        /* Output Area */
+        .output-header {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .execution-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        #output {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text-primary);
+        }
+
+        .output-empty {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .output-success {
+            color: var(--success);
+        }
+
+        .output-error {
+            color: var(--error);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-execute {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">💻</span>
+                CodeEX
+            </div>
+            <div class="header-actions">
+                <a href="https://github.com" target="_blank" class="btn-small btn-primary">
+                    ⭐ Star on GitHub
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <!-- Editor Section -->
+            <div class="editor-section">
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="label">Language:</label>
+                        <select id="language">
+                            {% for lang in languages %}
+                            <option value="{{ lang.id }}">{{ lang.icon }} {{ lang.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn-execute" id="executeBtn" onclick="executeCode()">
+                        ▶ Run Code
+                    </button>
+                </div>
+                <div class="editor-wrapper">
+                    <textarea id="editor" placeholder="Write your code here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="output-header">
+                    <div class="output-title">
+                        📤 Output
+                        <span class="execution-time" id="executionTime"></span>
+                    </div>
+                    <button class="btn-small btn-primary" onclick="clearOutput()" style="margin-left: auto;">
+                        🗑️ Clear
+                    </button>
+                </div>
+                <div id="output" class="output-empty">Run your code to see output here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const languageSelect = document.getElementById('language');
+        const editor = document.getElementById('editor');
+        const output = document.getElementById('output');
+        const executeBtn = document.getElementById('executeBtn');
+        const executionTime = document.getElementById('executionTime');
+
+        // Load template when language changes
+        languageSelect.addEventListener('change', async () => {
+            const lang = languageSelect.value;
+            try {
+                const response = await fetch(`/api/templates/${lang}`);
+                const data = await response.json();
+                editor.value = data.template;
+                editor.focus();
+            } catch (error) {
+                console.error('Error loading template:', error);
+            }
+        });
+
+        // Load initial template
+        languageSelect.dispatchEvent(new Event('change'));
+
+        // Execute code
+        async function executeCode() {
+            const code = editor.value;
+            const language = languageSelect.value;
+
+            if (!code.trim()) {
+                output.textContent = 'Please write some code first!';
+                output.className = 'output-error';
+                return;
+            }
+
+            executeBtn.disabled = true;
+            executeBtn.innerHTML = '<span class="spinner"></span> Running...';
+            output.textContent = 'Executing...';
+            output.className = '';
+
+            try {
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        language: language
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.error) {
+                        output.textContent = data.error;
+                        output.className = 'output-error';
+                    } else {
+                        output.textContent = data.output || '(No output)';
+                        output.className = 'output-success';
+                    }
+                    executionTime.textContent = `(${data.time}s)`;
+                } else {
+                    output.textContent = data.error || 'Error executing code';
+                    output.className = 'output-error';
+                }
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                output.className = 'output-error';
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.innerHTML = '▶ Run Code';
+            }
+        }
+
+        // Clear output
+        function clearOutput() {
+            output.textContent = 'Run your code to see output here...';
+            output.className = 'output-empty';
+            executionTime.textContent = '';
+        }
+
+        // Execute on Ctrl+Enter or Cmd+Enter
+        editor.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                executeCode();
+            }
+        });
+
+        // Tab support in editor
+        editor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + '\t' + editor.value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + 1;
+            }
+        });
+    </script>
+</body>
+</html>
