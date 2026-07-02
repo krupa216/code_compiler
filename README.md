@@ -5,7 +5,8 @@ A sleek, modern online code compiler built with Python and Flask. Execute code i
 # live 
 https://code-compiler-qdn8.onrender.com
 
-<img width="800" height="350" alt="image" src="https://github.com/user-attachments/assets/d74be4df-d369-497e-a0a1-fd806b8c3e3a" />
+
+<img width="700" height="350" alt="image" src="https://github.com/user-attachments/assets/d74be4df-d369-497e-a0a1-fd806b8c3e3a" />
 
 
 ## Features
