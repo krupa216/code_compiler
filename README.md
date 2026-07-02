@@ -2,10 +2,7 @@
 
 A sleek, modern online code compiler built with Python and Flask. Execute code in multiple programming languages with a beautiful, responsive UI.
 
-![Python](https://img.shields.io/badge/python-3.8+-green.svg)
-
-## Try it live
-https://code-compiler-qdn8.onrender.com
+# live https://code-compiler-qdn8.onrender.com
 
 ## Features
 
@@ -13,7 +10,6 @@ https://code-compiler-qdn8.onrender.com
 
 - ⚡ Fast code execution engine
 - 🐍 Multi-language support (Python, JavaScript, Java, C++, C)
-- 📊 Real-time execution time tracking
 - 📱 Fully responsive design (desktop & mobile)
 - 🔒 Secure code execution with timeouts
 
